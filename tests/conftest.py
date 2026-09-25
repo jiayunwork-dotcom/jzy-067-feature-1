@@ -27,6 +27,7 @@ def app(tmp_path):
     application.config.update(TESTING=True)
     yield application
     application.extensions["ga_jobs"].shutdown()
+    application.extensions["ga_calibration_jobs"].shutdown()
 
 
 @pytest.fixture()

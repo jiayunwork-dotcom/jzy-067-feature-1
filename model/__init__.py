@@ -6,8 +6,11 @@
 - ``model.solver``    隐式累积入渗量求解（牛顿迭代）
 - ``model.infiltration`` 入渗率与积水时刻判定
 - ``model.hydrograph``  历时点列分段推进（可取消）
+- ``model.calibration`` 观测反演标定（LM 最小二乘 + 可辨识性判定，独立成块）
+- ``model.calibration_jobs`` 标定后台作业生命周期（与点列作业分账）
+- ``model.calibration_routes`` 标定 HTTP 路由
 - ``model.profiles``    工况建档持久化
-- ``model.jobs``        后台作业生命周期
+- ``model.jobs``        点列后台作业生命周期
 - ``model.errors``      错误结构
 
 HTTP 路由见 ``routes.py``，应用装配见 ``app.py``。

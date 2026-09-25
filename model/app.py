@@ -9,6 +9,8 @@ from flask import Flask, jsonify
 from werkzeug.exceptions import HTTPException
 
 from . import config
+from .calibration_jobs import CalibrationJobManager
+from .calibration_routes import cal_api
 from .errors import ServiceError
 from .jobs import JobManager
 from .profiles import ProfileStore, seed_defaults
@@ -22,10 +24,16 @@ def create_app(*, profiles_dir: str | None = None) -> Flask:
     store = ProfileStore(profiles_dir or config.PROFILES_DIR)
     seed_defaults(store)
     mgr = JobManager(workers=config.JOB_WORKERS, retention=config.JOB_RETENTION)
+    cal_mgr = CalibrationJobManager(
+        workers=config.JOB_WORKERS, retention=config.JOB_RETENTION
+    )
 
     app.extensions["ga_profiles"] = store
     app.extensions["ga_jobs"] = mgr
+    app.extensions["ga_calibration_jobs"] = cal_mgr
+    cal_mgr.bind_app(app)
     app.register_blueprint(api)
+    app.register_blueprint(cal_api)
 
     @app.errorhandler(ServiceError)
     def _on_service_error(exc: ServiceError):
