@@ -27,6 +27,7 @@ def app(tmp_path):
     application.config.update(TESTING=True)
     yield application
     application.extensions["ga_jobs"].shutdown()
+    application.extensions["ga_caljobs"].shutdown()
 
 
 @pytest.fixture()
@@ -37,6 +38,18 @@ def client(app):
 @pytest.fixture()
 def job_manager():
     mgr = JobManager(workers=4)
+    yield mgr
+    mgr.shutdown()
+
+
+@pytest.fixture()
+def cal_manager(tmp_path):
+    from model.caljobs import CalibrationManager
+    from model.profiles import ProfileStore, seed_defaults
+
+    store = ProfileStore(tmp_path / "cal_profiles")
+    seed_defaults(store)
+    mgr = CalibrationManager(store, workers=4)
     yield mgr
     mgr.shutdown()
 
